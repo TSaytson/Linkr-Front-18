@@ -1,2 +1,2 @@
-# linkrSolo-front
+# linkrSolo-Frontend
 The social network for link sharing!
