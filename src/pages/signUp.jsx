@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-export default function SignIn() {
+export default function SignUp() {
     return (
         <Wrapper>
             <Linkr>
@@ -13,15 +13,18 @@ export default function SignIn() {
             <Form>
                     <input type="email" required name="email" placeholder="e-mail"></input>
                     <input type="password" required name="password" placeholder="password"></input>
-                    <button>Login</button>
-                    <Link to={'/sign-up'}>First time? Create an account</Link>
+                    <input type='text' required name='username' placeholder="username"></input>
+                    <input type='text' required name='picture' placeholder="picture url"></input>
+                    <button>Sign Up</button>
+                    <Link to={'/'}>Switch back to log in</Link>
             </Form>
         </Wrapper>
     )
 }
 
 const Wrapper = styled.div`
-    display: flex;    
+    display: flex;
+    
 `
 const Linkr = styled.div`
     background-color: #151515;
