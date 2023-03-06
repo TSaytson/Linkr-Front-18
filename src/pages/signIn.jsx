@@ -1,7 +1,30 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import {useState} from 'react';
 
 export default function SignIn() {
+    const [form, setForm] = useState({
+        email: '',
+        password: ''
+    })
+
+    function handleSubmit(e){
+        e.preventDefault();
+        const {password, email} = form;
+        if (!email || !password)
+            swal({
+                title: "Erro",
+                text: "Por favor, preencha todos os campos",
+                icon: "error"
+            });
+        else {
+            console.log(form);
+        }
+    }
+
+    function handleForm(e){
+        setForm({...form, [e.target.name]: e.target.value});
+    }
     return (
         <Wrapper>
             <Linkr>
@@ -10,9 +33,21 @@ export default function SignIn() {
                     <p>Save, share and discover the best links on the web</p>
                 </div>
             </Linkr>
-            <Form>
-                    <input type="email" required name="email" placeholder="e-mail"></input>
-                    <input type="password" required name="password" placeholder="password"></input>
+            <Form onSubmit={handleSubmit}>
+                    <input 
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleForm}
+                    placeholder="e-mail"
+                    />
+                    <input 
+                    name="password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleForm}
+                    placeholder="password"
+                    />
                     <button>Login</button>
                     <Link to={'/sign-up'}>First time? Create an account</Link>
             </Form>

@@ -1,7 +1,34 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import swal from 'sweetalert';
 
 export default function SignUp() {
+    const [form, setForm] = useState({
+        email: '',
+        password: '',
+        username: '',
+        picture: ''
+    });
+
+    function handleSubmit(e){
+        e.preventDefault();
+        const {username, password, email, picture} = form;
+        if (!email || !password || !username || !picture)
+            swal({
+                title: "Erro",
+                text: "Por favor, preencha todos os campos",
+                icon: "error"
+            });
+        else {
+            console.log(form);
+        }
+    }
+
+    function handleForm(e){
+        setForm({...form, [e.target.name] : e.target.value});
+    }
+
     return (
         <Wrapper>
             <Linkr>
@@ -10,11 +37,35 @@ export default function SignUp() {
                     <p>Save, share and discover the best links on the web</p>
                 </div>
             </Linkr>
-            <Form>
-                    <input type="email" required name="email" placeholder="e-mail"></input>
-                    <input type="password" required name="password" placeholder="password"></input>
-                    <input type='text' required name='username' placeholder="username"></input>
-                    <input type='text' required name='picture' placeholder="picture url"></input>
+            <Form onSubmit={handleSubmit}>
+                    <input 
+                    name="email"
+                    type="email" 
+                    value={form.email}
+                    onChange={handleForm}
+                    placeholder="e-mail"
+                    />
+                    <input 
+                    name='password'
+                    type="password" 
+                    value={form.password}
+                    onChange={handleForm}
+                    placeholder="password"
+                    />
+                    <input
+                    name='username'
+                     type='text' 
+                     value={form.name}
+                     onChange={handleForm}
+                     placeholder="username"
+                    />
+                    <input 
+                    name='picture'
+                    type='url' 
+                    value={form.picture}
+                    onChange={handleForm}
+                    placeholder="picture url"
+                    />
                     <button>Sign Up</button>
                     <Link to={'/'}>Switch back to log in</Link>
             </Form>
