@@ -1,16 +1,24 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import {useState} from 'react';
+import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import swal from "sweetalert";
+import { AuthContext } from "../contexts/auth.context";
+import { useNavigate } from "react-router-dom";
+import {ThreeDots} from 'react-loader-spinner';
 
 export default function SignIn() {
+    const {API_URL, setToken} = useContext(AuthContext);
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         password: ''
-    })
+    });
+    const [clicked, setClicked] = useState(false);
 
-    function handleSubmit(e){
+    async function handleSubmit(e) {
         e.preventDefault();
-        const {password, email} = form;
+        const { password, email } = form;
         if (!email || !password)
             swal({
                 title: "Erro",
@@ -18,12 +26,28 @@ export default function SignIn() {
                 icon: "error"
             });
         else {
-            console.log(form);
+            try {
+                setClicked(true);
+                const response =
+                    await axios.post(`${API_URL}/sign-in`, form);
+                setToken(response.data.token);
+                navigate('/timeline');
+            } catch (error) {
+                setClicked(false);
+                console.log(error.response.data);
+                swal({
+                    title: "Erro!",
+                    text: (error.response.data[0] ? 
+                    error.response.data[0] : error.response.data.message),
+                    icon: "error"
+                });
+
+            }
         }
     }
 
-    function handleForm(e){
-        setForm({...form, [e.target.name]: e.target.value});
+    function handleForm(e) {
+        setForm({ ...form, [e.target.name]: e.target.value });
     }
     return (
         <Wrapper>
@@ -34,22 +58,29 @@ export default function SignIn() {
                 </div>
             </Linkr>
             <Form onSubmit={handleSubmit}>
-                    <input 
+                <input
                     name="email"
                     type="email"
                     value={form.email}
                     onChange={handleForm}
                     placeholder="e-mail"
-                    />
-                    <input 
+                />
+                <input
                     name="password"
                     type="password"
                     value={form.password}
                     onChange={handleForm}
                     placeholder="password"
-                    />
-                    <button>Login</button>
-                    <Link to={'/sign-up'}>First time? Create an account</Link>
+                />
+                <button type="submit" disabled={clicked}>
+                    {clicked ? <ThreeDots
+                    color="#183bad"
+                    wrapperStyle={{
+                        display: clicked ? 'flex' : 'none',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}/>: 'Login'}</button>
+                <Link to={'/sign-up'}>First time? Create an account</Link>
             </Form>
         </Wrapper>
     )

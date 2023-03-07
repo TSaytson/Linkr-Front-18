@@ -1,19 +1,27 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import swal from 'sweetalert';
+import axios from 'axios';
+import { AuthContext } from "../contexts/auth.context";
+import { useNavigate } from "react-router-dom";
+import {ThreeDots} from 'react-loader-spinner';
 
 export default function SignUp() {
+
+    const {API_URL} = useContext(AuthContext);
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         password: '',
         username: '',
         picture: ''
     });
+    const [clicked, setClicked] = useState(false);
 
-    function handleSubmit(e){
+    async function handleSubmit(e) {
         e.preventDefault();
-        const {username, password, email, picture} = form;
+        const { username, password, email, picture } = form;
         if (!email || !password || !username || !picture)
             swal({
                 title: "Erro",
@@ -21,12 +29,30 @@ export default function SignUp() {
                 icon: "error"
             });
         else {
-            console.log(form);
+            try {
+                setClicked(true);
+                const response =
+                    await axios.post(`${API_URL}/sign-up`, form);
+                    swal({
+                        title: "Sucesso",
+                        text: response.data,
+                        icon: 'success'
+                    });
+                navigate('/');
+            } catch (error) {
+                setClicked(false);
+                console.log(error.response);
+                swal({
+                    title: "Erro",
+                    text: error.response.data,
+                    icon: "error"
+                });
+            }
         }
     }
 
-    function handleForm(e){
-        setForm({...form, [e.target.name] : e.target.value});
+    function handleForm(e) {
+        setForm({ ...form, [e.target.name]: e.target.value });
     }
 
     return (
@@ -38,36 +64,43 @@ export default function SignUp() {
                 </div>
             </Linkr>
             <Form onSubmit={handleSubmit}>
-                    <input 
+                <input
                     name="email"
-                    type="email" 
+                    type="email"
                     value={form.email}
                     onChange={handleForm}
                     placeholder="e-mail"
-                    />
-                    <input 
+                />
+                <input
                     name='password'
-                    type="password" 
+                    type="password"
                     value={form.password}
                     onChange={handleForm}
                     placeholder="password"
-                    />
-                    <input
+                />
+                <input
                     name='username'
-                     type='text' 
-                     value={form.name}
-                     onChange={handleForm}
-                     placeholder="username"
-                    />
-                    <input 
+                    type='text'
+                    value={form.name}
+                    onChange={handleForm}
+                    placeholder="username"
+                />
+                <input
                     name='picture'
-                    type='url' 
+                    type='url'
                     value={form.picture}
                     onChange={handleForm}
                     placeholder="picture url"
-                    />
-                    <button>Sign Up</button>
-                    <Link to={'/'}>Switch back to log in</Link>
+                />
+                <button type="submit" disabled={clicked}>
+                    {clicked ? <ThreeDots 
+                    color="#183bad"
+                    wrapperStyle={{
+                        display: clicked ? 'flex' : 'none',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}/> : 'Sign Up'}</button>
+                <Link to={'/'}>Switch back to log in</Link>
             </Form>
         </Wrapper>
     )
